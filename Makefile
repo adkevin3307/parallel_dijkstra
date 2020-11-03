@@ -1,4 +1,4 @@
-EXE = main
+EXE = dijkstra_series
 OBJ_DIR = obj
 
 SOURCES = $(wildcard src/*.cpp)

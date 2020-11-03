@@ -1,6 +1,7 @@
 #include "Graph.h"
 
 #include <iostream>
+#include <fstream>
 #include <algorithm>
 #include <stdexcept>
 
@@ -33,8 +34,10 @@ Graph::Graph(string path)
     file.close();
 
     for (size_t i = 0; i < this->_graph.size(); i++) {
-        sort(this->_graph.begin(), this->_graph.end());
+        sort(this->_graph[i].begin(), this->_graph[i].end());
     }
+
+    cout << "Total nodes: " << nodes << '\n';
 }
 
 Graph::~Graph()

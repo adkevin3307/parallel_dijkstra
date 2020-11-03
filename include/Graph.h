@@ -12,13 +12,13 @@ public:
 
     int destination, weight;
 
-    bool operator<(const Edge& edge)
+    friend bool operator<(const Edge& a, const Edge& b)
     {
-        if (this->weight != edge.weight) {
-            return this->weight < edge.weight;
+        if (a.weight != b.weight) {
+            return a.weight < b.weight;
         }
 
-        return this->destination < edge.destination;
+        return a.destination < b.destination;
     }
 };
 
