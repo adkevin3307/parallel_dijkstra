@@ -58,7 +58,7 @@ int dijkstra(Graph& graph)
         }
     }
 
-    show_path(parent);
+    // show_path(parent);
 
     return distance.back();
 }
@@ -75,11 +75,11 @@ int main(int argc, char** argv)
 
     Timer::begin();
     int shortest_distance = dijkstra(graph);
-    Timer::end();
-
-    cout << Timer::time() << '\n';
 
     cout << "Shortest distance: " << shortest_distance << '\n';
+    Timer::end();
+
+    cout << "Execution time: " << Timer::time() << '\n';
 
     return 0;
 }
