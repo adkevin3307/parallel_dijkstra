@@ -5,8 +5,8 @@
 #include <algorithm>
 
 #include "Graph.h"
+#define threadNum 8
 
-#define MAX_THREAD_NUM
 using namespace std;
 
 void show_path(vector<size_t> &parent)
@@ -28,19 +28,21 @@ void show_path(vector<size_t> &parent)
     }
 }
 
-int dijkstra(Graph &graph)
+int dijkstra(Graph &graph,int numOfThread)
 {
     vector<size_t> parent(graph.size(), 0);
     vector<bool> visit(graph.size(), false);
     vector<int> distance(graph.size(), INT_MAX/2 );
-    vector<int> localMinDistanceNode(8, 0);
+    vector<int> localMinDistanceNode(numOfThread, 0);
     distance[0] = 0;
     for (size_t i = 0; i < graph.size(); i++)
     {
         int curLocalMinDistanceNodeLen;
+        omp_set_num_threads(numOfThread);
 #pragma omp parallel
         {
             int source = -1;
+            //cout << omp_get_num_threads() << endl;
             int min_distance = INT_MAX/2 ;
 
             //comput local minimal distance
@@ -77,6 +79,7 @@ int dijkstra(Graph &graph)
                                                   : localMinDistanceNode.back();
                 }
             }
+        omp_set_num_threads(numOfThread);
 #pragma omp parallel for
             for (int i = 0; i < curLocalMinDistanceNodeLen / 2; i++)
             {
@@ -104,6 +107,7 @@ int dijkstra(Graph &graph)
         visit[source] = true;
 
         // update distances
+        omp_set_num_threads(numOfThread);
         #pragma omp parallel for
         for (size_t j = 0; j < graph[source].size(); j++)
         {
@@ -125,15 +129,15 @@ int dijkstra(Graph &graph)
 
 int main(int argc, char **argv)
 {
-    if (argc != 2)
+    if (argc != 3)
     {
-        cerr << "Usage: ./dijkstra_series {input file}" << '\n';
+        cerr << "Usage: ./dijkstra_series {input file} {threadNu}" << '\n';
 
         return 0;
     }
-
+    int numofThread= atoi(argv[2]);
     Graph graph(argv[1]);
-    int shortest_distance = dijkstra(graph);
+    int shortest_distance = dijkstra(graph,numofThread);
 
     cout << "Shortest distance: " << shortest_distance << '\n';
 
