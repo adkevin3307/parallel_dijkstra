@@ -3,6 +3,7 @@
 #include <climits>
 
 #include "Graph.h"
+#include "Timer.h"
 
 using namespace std;
 
@@ -71,7 +72,12 @@ int main(int argc, char** argv)
     }
 
     Graph graph(argv[1]);
+
+    Timer::begin();
     int shortest_distance = dijkstra(graph);
+    Timer::end();
+
+    cout << Timer::time() << '\n';
 
     cout << "Shortest distance: " << shortest_distance << '\n';
 
