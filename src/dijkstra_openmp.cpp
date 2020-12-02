@@ -5,6 +5,7 @@
 #include <algorithm>
 
 #include "Graph.h"
+#include "Timer.h"
 
 #define threadNum 8
 
@@ -164,11 +165,17 @@ int main(int argc, char **argv)
 
         return 0;
     }
-    int numofThread= atoi(argv[2]);
+
+    int numofThread = atoi(argv[2]);
     Graph graph(argv[1]);
-    int shortest_distance = dijkstra(graph,numofThread);
+
+    Timer::begin();
+    int shortest_distance = dijkstra(graph, numofThread);
 
     cout << "Shortest distance: " << shortest_distance << '\n';
+    Timer::end();
+
+    cout << "Execution time: " << Timer::time() << '\n';
 
     return 0;
 }
