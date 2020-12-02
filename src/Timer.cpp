@@ -147,7 +147,7 @@ void Timer::end()
 
 double Timer::time()
 {
-    return (Timer::_end - Timer::_begin) * 1000;
+    return Timer::_end - Timer::_begin;
 }
 
 double Timer::current_time()
