@@ -25,7 +25,7 @@ void show_path(vector<size_t>& parent)
     }
 }
 
-void search(vector<bool>& visit, vector<int>& distance, int begin, int step, int end, int& source, int& min_distance)
+void search(vector<bool>& visit, vector<int>& distance, int begin, int step, int end, int& source)
 {
     int local_source = -1;
     int local_min_distance = INT_MAX / 2;
@@ -38,16 +38,15 @@ void search(vector<bool>& visit, vector<int>& distance, int begin, int step, int
     }
 
     source = local_source;
-    min_distance = local_min_distance;
 }
 
-void compare(int id, int index, vector<int>& sources, vector<int>& min_distances)
+void compare(int id_1, int id_2, vector<int>& sources, vector<int>& distance)
 {
-    int compare_index = id + index / 2;
+    int distance_1 = (sources[id_1] == -1 ? INT_MAX / 2 : distance[sources[id_1]]);
+    int distance_2 = (sources[id_2] == -1 ? INT_MAX / 2 : distance[sources[id_2]]);
 
-    if (min_distances[id] > min_distances[compare_index]) {
-        sources[id] = sources[compare_index];
-        min_distances[id] = min_distances[compare_index];
+    if (distance_1 > distance_2) {
+        sources[id_1] = sources[id_2];
     }
 }
 
@@ -73,31 +72,28 @@ int dijkstra(Graph& graph, int thread_amount)
     distance[0] = 0;
 
     thread_amount = ((int)graph.size() < thread_amount ? graph.size() : thread_amount);
+    cout << "thread amount: " << thread_amount << '\n';
+
     vector<thread> threads(thread_amount);
+    vector<int> sources(thread_amount);
 
     for (size_t i = 0; i < graph.size(); i++) {
-        vector<int> sources(thread_amount, -1);
-        vector<int> min_distances(thread_amount, INT_MAX / 2);
-
-        for (size_t id = 0; id < threads.size(); id++) {
-            threads[id] = thread(search, ref(visit), ref(distance), id, thread_amount, graph.size(), ref(sources[id]), ref(min_distances[id]));
+        for (auto id = 0; id < thread_amount; id++) {
+            threads[id] = thread(search, ref(visit), ref(distance), id, thread_amount, graph.size(), ref(sources[id]));
         }
 
-        for (size_t id = 0; id < threads.size(); id++) {
+        for (auto id = 0; id < thread_amount; id++) {
             threads[id].join();
         }
 
         int index = thread_amount;
         while (index > 1) {
             if (index % 2) {
-                if (min_distances[0] > min_distances[index - 1]) {
-                    sources[0] = sources[index - 1];
-                    min_distances[0] = min_distances[index - 1];
-                }
+                compare(0, index - 1, sources, distance);
             }
 
             for (auto id = 0; id < index / 2; id++) {
-                threads[id] = thread(compare, id, index, ref(sources), ref(min_distances));
+                threads[id] = thread(compare, id, id + index / 2, ref(sources), ref(distance));
             }
 
             for (auto id = 0; id < index / 2; id++) {
@@ -113,11 +109,11 @@ int dijkstra(Graph& graph, int thread_amount)
 
         visit[source] = true;
 
-        for (size_t id = 0; id < threads.size(); id++) {
+        for (auto id = 0; id < thread_amount; id++) {
             threads[id] = thread(update, ref(graph), ref(visit), ref(distance), ref(parent), source, id, thread_amount, graph[source].size());
         }
 
-        for (size_t id = 0; id < threads.size(); id++) {
+        for (auto id = 0; id < thread_amount; id++) {
             threads[id].join();
         }
     }
