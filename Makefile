@@ -1,4 +1,4 @@
-EXE = dijkstra_series dijkstra_boost dijkstra_openmp
+EXE = dijkstra_series dijkstra_boost dijkstra_openmp dijkstra_thread
 OBJ_DIR = obj
 
 SOURCES = src/Graph.cpp src/Timer.cpp
@@ -7,6 +7,7 @@ OBJS = $(addprefix $(OBJ_DIR)/, $(addsuffix .o, $(basename $(notdir $(SOURCES)))
 OBJS_SERIES = $(OBJS) $(OBJ_DIR)/dijkstra_series.o
 OBJS_BOOST = $(OBJS) $(OBJ_DIR)/dijkstra_boost.o
 OBJS_OPENMP = $(OBJS) $(OBJ_DIR)/dijkstra_openmp.o
+OBJS_THREAD = $(OBJS) $(OBJ_DIR)/dijkstra_thread.o
 
 CXXFLAGS = -std=c++17 -I./include -Wall -O2 -g -fopenmp
 
@@ -28,6 +29,9 @@ dijkstra_boost: $(OBJS_BOOST)
 	$(CXX) $(CXXFLAGS) -o $@ $^ $(LIBS)
 
 dijkstra_openmp: $(OBJS_OPENMP)
+	$(CXX) $(CXXFLAGS) -o $@ $^ $(LIBS)
+
+dijkstra_thread: $(OBJS_THREAD)
 	$(CXX) $(CXXFLAGS) -o $@ $^ $(LIBS)
 
 clean:

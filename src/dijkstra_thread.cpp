@@ -1,0 +1,149 @@
+#include <iostream>
+#include <vector>
+#include <climits>
+#include <thread>
+
+#include "Graph.h"
+#include "Timer.h"
+
+using namespace std;
+
+void show_path(vector<size_t>& parent)
+{
+    size_t index = parent.size() - 1;
+    vector<size_t> nodes(1, index);
+
+    while (parent[index] != index) {
+        index = parent[index];
+
+        nodes.push_back(index);
+    }
+
+    cout << "Shortest path: ";
+    for (int i = nodes.size() - 1; i >= 0; i--) {
+        cout << nodes[i] << (i == 0 ? "\n" : " -> ");
+    }
+}
+
+void search(vector<bool>& visit, vector<int>& distance, int begin, int step, int end, int& source, int& min_distance)
+{
+    int local_source = -1;
+    int local_min_distance = INT_MAX / 2;
+
+    for (int i = begin; i < end; i += step) {
+        if (!visit[i] && distance[i] < local_min_distance) {
+            local_source = i;
+            local_min_distance = distance[i];
+        }
+    }
+
+    source = local_source;
+    min_distance = local_min_distance;
+}
+
+void compare(int id, int index, vector<int>& sources, vector<int>& min_distances)
+{
+    int compare_index = id + index / 2;
+
+    if (min_distances[id] > min_distances[compare_index]) {
+        sources[id] = sources[compare_index];
+        min_distances[id] = min_distances[compare_index];
+    }
+}
+
+void update(Graph& graph, vector<bool>& visit, vector<int>& distance, vector<size_t>& parent, int source, int begin, int step, int end)
+{
+    for (int i = begin; i < end; i += step) {
+        int destination = graph[source][i].destination;
+        int weight = graph[source][i].weight;
+
+        if (!visit[destination] && distance[source] + weight < distance[destination]) {
+            distance[destination] = distance[source] + weight;
+            parent[destination] = source;
+        }
+    }
+}
+
+int dijkstra(Graph& graph, int thread_amount)
+{
+    vector<size_t> parent(graph.size(), 0);
+    vector<bool> visit(graph.size(), false);
+    vector<int> distance(graph.size(), INT_MAX / 2);
+
+    distance[0] = 0;
+
+    thread_amount = ((int)graph.size() < thread_amount ? graph.size() : thread_amount);
+    vector<thread> threads(thread_amount);
+
+    for (size_t i = 0; i < graph.size(); i++) {
+        vector<int> sources(thread_amount, -1);
+        vector<int> min_distances(thread_amount, INT_MAX / 2);
+
+        for (size_t id = 0; id < threads.size(); id++) {
+            threads[id] = thread(search, ref(visit), ref(distance), id, thread_amount, graph.size(), ref(sources[id]), ref(min_distances[id]));
+        }
+
+        for (size_t id = 0; id < threads.size(); id++) {
+            threads[id].join();
+        }
+
+        int index = thread_amount;
+        while (index > 1) {
+            if (index % 2) {
+                if (min_distances[0] > min_distances[index - 1]) {
+                    sources[0] = sources[index - 1];
+                    min_distances[0] = min_distances[index - 1];
+                }
+            }
+
+            for (auto id = 0; id < index / 2; id++) {
+                threads[id] = thread(compare, id, index, ref(sources), ref(min_distances));
+            }
+
+            for (auto id = 0; id < index / 2; id++) {
+                threads[id].join();
+            }
+
+            index /= 2;
+        }
+
+        int source = sources[0];
+
+        if (source == -1) break;
+
+        visit[source] = true;
+
+        for (size_t id = 0; id < threads.size(); id++) {
+            threads[id] = thread(update, ref(graph), ref(visit), ref(distance), ref(parent), source, id, thread_amount, graph[source].size());
+        }
+
+        for (size_t id = 0; id < threads.size(); id++) {
+            threads[id].join();
+        }
+    }
+
+    // show_path(parent);
+
+    return distance.back();
+}
+
+int main(int argc, char** argv)
+{
+    if (argc != 2) {
+        cerr << "Usage: ./dijkstra_series {input file}" << '\n';
+
+        return 0;
+    }
+
+    Graph graph(argv[1]);
+
+    Timer::begin();
+    int shortest_distance = dijkstra(graph, 12);
+
+    cout << "Shortest distance: " << shortest_distance << '\n';
+    Timer::end();
+
+    cout << "Execution time: " << Timer::time() << '\n';
+
+    return 0;
+}
