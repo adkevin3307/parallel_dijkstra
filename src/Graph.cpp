@@ -17,6 +17,10 @@ Edge::~Edge()
 {
 }
 
+Graph::Graph()
+{
+}
+
 Graph::Graph(string path)
 {
     fstream file;
