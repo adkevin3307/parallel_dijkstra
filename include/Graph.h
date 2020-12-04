@@ -27,6 +27,7 @@ private:
     vector<vector<Edge>> _graph;
 
 public:
+    Graph();
     Graph(string path);
     ~Graph();
 
