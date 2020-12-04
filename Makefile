@@ -1,10 +1,10 @@
-EXE = dijkstra_series dijkstra_boost dijkstra_openmp
+EXE = dijkstra_serial dijkstra_boost dijkstra_openmp
 OBJ_DIR = obj
 
 SOURCES = src/Graph.cpp src/Timer.cpp
 
 OBJS = $(addprefix $(OBJ_DIR)/, $(addsuffix .o, $(basename $(notdir $(SOURCES)))))
-OBJS_SERIES = $(OBJS) $(OBJ_DIR)/dijkstra_series.o
+OBJS_SERIAL = $(OBJS) $(OBJ_DIR)/dijkstra_serial.o
 OBJS_BOOST = $(OBJS) $(OBJ_DIR)/dijkstra_boost.o
 OBJS_OPENMP = $(OBJS) $(OBJ_DIR)/dijkstra_openmp.o
 
@@ -21,7 +21,7 @@ create_object_directory:
 $(OBJ_DIR)/%.o: src/%.cpp
 	$(CXX) $(CXXFLAGS) -c -o $@ $<
 
-dijkstra_series: $(OBJS_SERIES)
+dijkstra_serial: $(OBJS_SERIAL)
 	$(CXX) $(CXXFLAGS) -o $@ $^ $(LIBS)
 
 dijkstra_boost: $(OBJS_BOOST)

@@ -57,7 +57,7 @@ int dijkstra(graph_t& graph)
 int main(int argc, char** argv)
 {
     if (argc != 2) {
-        cerr << "Usage: ./dijkstra_series {input file}" << '\n';
+        cerr << "Usage: ./dijkstra_boost {input file}" << '\n';
 
         return 0;
     }

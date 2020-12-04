@@ -159,14 +159,14 @@ int dijkstra(Graph &graph,int numOfThread)
 
 int main(int argc, char **argv)
 {
-    if (argc != 3)
+    if (argc != 2 && argc != 3)
     {
-        cerr << "Usage: ./dijkstra_series {input file} {threadNu}" << '\n';
+        cerr << "Usage: ./dijkstra_openmp {input file} {thread num=8}" << '\n';
 
         return 0;
     }
 
-    int numofThread = atoi(argv[2]);
+    int numofThread = (argc == 2 ? 8 : atoi(argv[2]));
     Graph graph(argv[1]);
 
     Timer::begin();

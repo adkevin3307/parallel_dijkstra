@@ -66,7 +66,7 @@ int dijkstra(Graph& graph)
 int main(int argc, char** argv)
 {
     if (argc != 2) {
-        cerr << "Usage: ./dijkstra_series {input file}" << '\n';
+        cerr << "Usage: ./dijkstra_serial {input file}" << '\n';
 
         return 0;
     }
