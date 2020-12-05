@@ -13,6 +13,7 @@ Parallel Programming Final Project
 - `./measure.sh` measure all version execution time
 
 ## Result
+- `USA-road-d.NY.in`
 ```
 Execution Program: dijkstra_serial
 Average time: 126.706

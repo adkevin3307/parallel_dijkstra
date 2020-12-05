@@ -138,7 +138,7 @@ int main(int argc, char** argv)
     graph = Graph(argv[1]);
     thread_amount = (argc == 2 ? 8 : atoi(argv[2]));
 
-    Timer::begin();    
+    Timer::begin();
     int shortest_distance = dijkstra(graph);
 
     cout << "Shortest distance: " << shortest_distance << '\n';
