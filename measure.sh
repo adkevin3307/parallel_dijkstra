@@ -30,6 +30,7 @@ make
 echo ""
 
 test_file=$1
+echo "Test file: $test_file"
 
 for program in dijkstra_serial dijkstra_boost dijkstra_openmp dijkstra_thread dijkstra_pthread; do
     echo "Execution Program: $program"
