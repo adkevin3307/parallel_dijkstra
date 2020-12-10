@@ -4,6 +4,7 @@
 #include <fstream>
 #include <algorithm>
 #include <stdexcept>
+#include <climits>
 
 using namespace std;
 
@@ -37,11 +38,21 @@ Graph::Graph(string path)
 
     file.close();
 
+    int total_edges = 0, min_edges = INT_MAX, max_edges = 0;
     for (size_t i = 0; i < this->_graph.size(); i++) {
+        total_edges += this->_graph[i].size();
+
+        min_edges = min(min_edges, (int)this->_graph[i].size());
+        max_edges = max(max_edges, (int)this->_graph[i].size());
+
         sort(this->_graph[i].begin(), this->_graph[i].end());
     }
 
     cout << "Total nodes: " << nodes << '\n';
+    cout << "Total edges: " << total_edges << '\n';
+    cout << "Min edge numbers: " << min_edges << '\n';
+    cout << "Max edge numbers: " << max_edges << '\n';
+    cout << "Avg edge numbers: " << (total_edges / this->_graph.size()) << '\n';
 }
 
 Graph::~Graph()
