@@ -1,3 +1,5 @@
+#define BOOST_ALLOW_DEPRECATED_HEADERS
+
 #include <iostream>
 #include <vector>
 #include <boost/config.hpp>
